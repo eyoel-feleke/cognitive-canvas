@@ -1,0 +1,5 @@
+{
+  "server_name": "contentgraph-mcp",
+  "tools": ["store_content", "query_content", "generate_quiz"],
+  "capabilities": ["content_storage", "content_query", "quiz_generation"]
+}

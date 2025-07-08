@@ -1,0 +1,6 @@
+[project]
+name = "contentgraph-mcp"
+version = "0.1.0"
+description = "MCP server for content management and quizzing"
+authors = ["Your Name <your@email.com>"]
+requires-python = ">=3.11"

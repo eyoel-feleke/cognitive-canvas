@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "contentgraph-mcp": {
+      "path": "./main.py"
+    }
+  }
+}

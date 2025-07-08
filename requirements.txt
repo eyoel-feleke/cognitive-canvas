@@ -1,0 +1,10 @@
+mcp
+sentence-transformers
+chromadb
+openai
+instructor
+pydantic
+beautifulsoup4
+requests
+python-dotenv
+fastapi
