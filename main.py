@@ -1,4 +1,5 @@
-from src.mcp_server import run_server
+from src.mcp_server import MCPServer
 
 if __name__ == "__main__":
-    run_server()
+    mcp = MCPServer()
+    mcp.run_mcp_server()

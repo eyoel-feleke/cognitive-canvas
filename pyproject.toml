@@ -4,3 +4,15 @@ version = "0.1.0"
 description = "MCP server for content management and quizzing"
 authors = ["Your Name <your@email.com>"]
 requires-python = ">=3.11"
+dependencies = [
+    "beautifulsoup4>=4.13.4",
+    "chromadb>=1.0.15",
+    "fastapi>=0.116.1",
+    "instructor>=1.10.0",
+    "mcp>=1.12.1",
+    "openai>=1.97.1",
+    "pydantic>=2.11.7",
+    "python-dotenv>=1.1.1",
+    "requests>=2.32.4",
+    "sentence-transformers>=5.0.0",
+]
