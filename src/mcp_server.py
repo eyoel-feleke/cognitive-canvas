@@ -1,11 +1,5 @@
 from src.tools import store_content, generate_quiz, query_content
 from mcp.server.fastmcp import FastMCP
-# TODO: decorate with @mcp.tool 
-#
-# @mcp.tools()
-# store_content
-
-# mcp = FastMCP("Tools server")
 
 class MCPServer:
     
@@ -42,4 +36,3 @@ class MCPServer:
     
     def run_mcp_server(self):
         self.mcp.run()
-
