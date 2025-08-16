@@ -1,4 +1,5 @@
 from datetime import datetime
+import uuid
 from src.models.content import ContentMetadata, ContentRecord
 from src.models.quiz import Quiz, QuizQuestion, QuizResult
 from src.models.responses import ErrorResponse, SuccessResponse, ToolResponse
@@ -7,14 +8,20 @@ from pydantic import ValidationError
 
 class TestContentRecordAndMetadata:
     """Test ContentMetadata Model."""
-    def test_content_metadata(self, sample_metadata):
+    def test_content_metadata(self):
         """Test the ContentMetadata model."""
-        assert sample_metadata.title =="Sample Title"
-        assert sample_metadata.author == "John Doe"
-        assert sample_metadata.abstract == "A brief summary of the article."
-        assert sample_metadata.keywords == ["keyword1", "keyword2"]
-        assert isinstance(sample_metadata.date_published, datetime) 
-        
+        sample_metadata = ContentMetadata(
+            title="Sample Title",
+            author="John Doe",
+            abstract="A brief summary of the article.",
+            keywords=["keyword1", "keyword2"],
+            date_published=datetime.now()
+        )
+        assert sample_metadata.title == "Sample Title", f"Expected title to be 'Sample Title', but got '{sample_metadata.title}'"
+        assert sample_metadata.author == "John Doe", f"Expected author to be 'John Doe', but got '{sample_metadata.author}'"
+        assert sample_metadata.abstract == "A brief summary of the article.", f"Expected abstract to be 'A brief summary of the article.', but got '{sample_metadata.abstract}'"
+        assert sample_metadata.keywords == ["keyword1", "keyword2", "keyword3"], f"Expected keywords to be ['keyword1', 'keyword2', 'keyword3'], but got {sample_metadata.keywords}"  # this test is going to fail because I added a keyword that is was not in the original metadata. 
+        assert isinstance(sample_metadata.date_published, datetime), f"Expected date_published to be datetime instance, but got {type(sample_metadata.date_published)}"
     def test_content_metadata_validation(self):
         """Test the ContentMetadata model validation."""
         with pytest.raises(ValidationError):
