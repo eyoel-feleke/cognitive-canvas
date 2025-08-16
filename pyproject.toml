@@ -2,7 +2,10 @@
 name = "contentgraph-mcp"
 version = "0.1.0"
 description = "MCP server for content management and quizzing"
-authors = ["Your Name <your@email.com>"]
+authors = [
+    {name = "Eyoel Feleke", email = "eyu2.wf@gmail.com"},
+    {name = "Etsub Feleke", email = "etsub.wende@gmail.com"}
+]
 requires-python = ">=3.11"
 dependencies = [
     "beautifulsoup4>=4.13.4",
@@ -36,9 +39,6 @@ python_files = ["test_*.py", "*_test.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 addopts = [
-    "--cov=src",
-    "--cov-report=html",
-    "--cov-report=term-missing",
     "--strict-markers",
     "-v"
 ]
