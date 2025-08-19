@@ -31,7 +31,7 @@ skip_empty = True
 precision = 2
 
 # Minimum coverage percentage to pass
-fail_under = 10
+fail_under = 50
 
 # Lines to exclude from coverage
 exclude_lines =
