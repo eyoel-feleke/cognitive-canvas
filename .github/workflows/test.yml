@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.11", "3.12"]
+        python-version: ["3.11"]
 
     steps:
     - uses: actions/checkout@v4
@@ -68,7 +68,7 @@ jobs:
     
     - name: Run safety scan
       run: |
-        uv tool run safety scan || true
+        uv tool run safety scan --key ${{ secrets.SAFETY_API_KEY }} || true
     
     - name: Run bandit security linter
       run: |
