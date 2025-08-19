@@ -5,3 +5,17 @@ __pycache__/
 /data/logs/
 
 .venv/
+
+# Test coverage files
+*.log
+*.tmp
+*.temp
+build/
+dist/
+*.egg-info/
+.pytest_cache/
+.tox/
+htmlcov/
+.coverage
+coverage.xml
+coverage.json

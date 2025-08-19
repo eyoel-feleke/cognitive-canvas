@@ -1,6 +1,6 @@
 # Makefile for ContentGraph MCP Server
 
-.PHONY: help install install-dev sync test test-unit test-integration test-coverage test-fast clean lint format setup-dev add add-dev
+.PHONY: help install install-dev sync test test-unit test-integration test-coverage test-fast clean lint format setup-dev add add-dev coverage coverage-html coverage-report
 
 # Default target
 help:
@@ -13,6 +13,9 @@ help:
 	@echo "  make test-integration - Run integration tests only"
 	@echo "  make test-coverage - Run tests with detailed coverage"
 	@echo "  make test-fast    - Run tests without coverage (faster)"
+	@echo "  make coverage     - Generate coverage reports (HTML, XML, JSON)"
+	@echo "  make coverage-html - Generate and open HTML coverage report"
+	@echo "  make coverage-report - Show coverage summary in terminal"
 	@echo "  make lint         - Run linting checks"
 	@echo "  make format       - Format code with black and isort"
 	@echo "  make clean        - Clean up build artifacts"
@@ -30,6 +33,10 @@ install-dev:
 # Sync dependencies from lock file
 sync:
 	uv sync
+
+# Sync all dependencies for testing
+sync-test:
+	uv sync --all-extras
 
 # Testing
 test:
@@ -49,6 +56,17 @@ test-coverage:
 
 test-fast:
 	uv run python run_tests.py --mode fast
+
+# Coverage reports
+coverage:
+	uv run python scripts/generate_coverage.py --format all --run-tests
+
+coverage-html:
+	uv run python scripts/generate_coverage.py --format html --run-tests --open
+
+coverage-report:
+	uv run python -m coverage report --show-missing
+	uv run python scripts/coverage_status.py
 
 # Code quality
 lint:
@@ -81,10 +99,6 @@ clean:
 	find . -type f -name "*.pyc" -delete
 	rm -rf .venv/
 
-# Run specific test file
-test-file:
-	@read -p "Enter test file name (e.g., test_models.py): " file; \
-	uv run python run_tests.py --file $$file
 
 # Watch mode for tests (requires entr)
 test-watch:

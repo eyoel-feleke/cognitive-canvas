@@ -1,0 +1,10 @@
+https://example.com/machine-learning-intro
+https://example.com/python-tutorial
+https://example.com/climate-change-facts
+https://example.com/quantum-computing-basics
+https://example.com/data-science-guide
+https://example.com/web-development-tips
+https://example.com/artificial-intelligence
+https://example.com/programming-best-practices
+https://example.com/renewable-energy
+https://example.com/cybersecurity-fundamentals
