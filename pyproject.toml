@@ -2,7 +2,10 @@
 name = "contentgraph-mcp"
 version = "0.1.0"
 description = "MCP server for content management and quizzing"
-authors = ["Your Name <your@email.com>"]
+authors = [
+    {name = "Eyoel Feleke", email = "eyu2.wf@gmail.com"},
+    {name = "Etsub Feleke", email = "etsub.wende@gmail.com"}
+]
 requires-python = ">=3.11"
 dependencies = [
     "beautifulsoup4>=4.13.4",
@@ -15,4 +18,37 @@ dependencies = [
     "python-dotenv>=1.1.1",
     "requests>=2.32.4",
     "sentence-transformers>=5.0.0",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-mock>=3.10.0",
+    "pytest-asyncio>=0.21.0",
+    "httpx>=0.24.0",
+]
+
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--cov=src",
+    "--cov-report=html:htmlcov",
+    "--cov-report=xml:coverage.xml",
+    "--cov-report=term-missing",
+    "--cov-branch",
+    "--strict-markers",
+    "-v"
+]
+markers = [
+    "unit: Unit tests",
+    "integration: Integration tests",
+    "slow: Slow tests",
 ]
