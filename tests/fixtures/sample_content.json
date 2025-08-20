@@ -1,1 +1,87 @@
-[]
+[
+  {
+    "id": "content-001",
+    "original_content": "Machine learning is a subset of artificial intelligence (AI) that provides systems the ability to automatically learn and improve from experience without being explicitly programmed. Machine learning focuses on the development of computer programs that can access data and use it to learn for themselves.",
+    "content_type": "text",
+    "title": "Introduction to Machine Learning",
+    "summary": "An overview of machine learning as a subset of AI that enables systems to learn from data.",
+    "category": "Technology",
+    "tags": ["machine learning", "AI", "programming", "data science"],
+    "embedding": [0.1, 0.2, 0.3, 0.4, 0.5],
+    "timestamp": "2025-08-12T10:00:00Z",
+    "source_url": "https://example.com/ml-intro",
+    "metadata": {
+      "author": "Tech Writer",
+      "word_count": 89,
+      "reading_time": "1 min"
+    }
+  },
+  {
+    "id": "content-002",
+    "original_content": "Python is a high-level, interpreted programming language with dynamic semantics. Its high-level built-in data structures, combined with dynamic typing and dynamic binding, make it very attractive for Rapid Application Development, as well as for use as a scripting or glue language to connect existing components together.",
+    "content_type": "text",
+    "title": "Python Programming Language Overview",
+    "summary": "An introduction to Python as a high-level programming language suitable for rapid development.",
+    "category": "Programming",
+    "tags": ["python", "programming", "development", "scripting"],
+    "embedding": [0.2, 0.3, 0.4, 0.5, 0.6],
+    "timestamp": "2025-08-12T11:00:00Z",
+    "source_url": "https://example.com/python-intro",
+    "metadata": {
+      "author": "Python Developer",
+      "word_count": 76,
+      "reading_time": "1 min"
+    }
+  },
+  {
+    "id": "content-003",
+    "original_content": "def fibonacci(n):\n    if n <= 1:\n        return n\n    return fibonacci(n-1) + fibonacci(n-2)\n\n# Example usage\nprint(fibonacci(10))",
+    "content_type": "code",
+    "title": "Fibonacci Function in Python",
+    "summary": "A recursive implementation of the Fibonacci sequence in Python.",
+    "category": "Programming",
+    "tags": ["python", "algorithm", "recursion", "fibonacci"],
+    "embedding": [0.3, 0.4, 0.5, 0.6, 0.7],
+    "timestamp": "2025-08-12T12:00:00Z",
+    "source_url": null,
+    "metadata": {
+      "language": "python",
+      "lines_of_code": 6,
+      "complexity": "simple"
+    }
+  },
+  {
+    "id": "content-004",
+    "original_content": "Climate change refers to long-term shifts in temperatures and weather patterns. While climate variations occur naturally, since the 1800s human activities have been the main driver of climate change, primarily due to the burning of fossil fuels like coal, oil and gas.",
+    "content_type": "url",
+    "title": "Understanding Climate Change",
+    "summary": "An explanation of climate change causes and human impact since the 1800s.",
+    "category": "Environment",
+    "tags": ["climate change", "environment", "fossil fuels", "global warming"],
+    "embedding": [0.4, 0.5, 0.6, 0.7, 0.8],
+    "timestamp": "2025-08-12T13:00:00Z",
+    "source_url": "https://example.com/climate-change",
+    "metadata": {
+      "publication_date": "2025-08-12",
+      "word_count": 52,
+      "credibility_score": 0.95
+    }
+  },
+  {
+    "id": "content-005",
+    "original_content": "The quantum computer harnesses the mysterious power of quantum mechanics to process information in ways that classical computers cannot. Unlike classical bits that are either 0 or 1, quantum bits (qubits) can exist in multiple states simultaneously through superposition.",
+    "content_type": "text",
+    "title": "Quantum Computing Basics",
+    "summary": "An introduction to quantum computing and how it differs from classical computing.",
+    "category": "Technology",
+    "tags": ["quantum computing", "qubits", "superposition", "technology"],
+    "embedding": [0.5, 0.6, 0.7, 0.8, 0.9],
+    "timestamp": "2025-08-12T14:00:00Z",
+    "source_url": "https://example.com/quantum-computing",
+    "metadata": {
+      "difficulty_level": "intermediate",
+      "word_count": 45,
+      "scientific_accuracy": 0.98
+    }
+  }
+]
