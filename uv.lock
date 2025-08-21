@@ -372,6 +372,7 @@ dependencies = [
     { name = "mcp" },
     { name = "openai" },
     { name = "pydantic" },
+    { name = "pytest" },
     { name = "python-dotenv" },
     { name = "requests" },
     { name = "sentence-transformers" },
