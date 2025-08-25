@@ -4,6 +4,8 @@ from urllib.parse import urlparse
 import re
 from requests.exceptions import RequestException, Timeout, ConnectionError, HTTPError
 
+from src.core.exceptions import URLFormatException
+
 
 class ContentExtractor:
     def __init__(self):
@@ -12,6 +14,8 @@ class ContentExtractor:
         }
     def extract_from_url(self, url: str) -> dict:
         """Extract content from a given URL."""
+        if not url:
+            raise URLFormatException(message=f"Invalid URL format. The URL cannot be empty. It needs to be of format http://<URL> or https://<URL> but got {url}")
         try:
             response = requests.get(url, headers=self.headers, timeout=10)
             response.raise_for_status()  
