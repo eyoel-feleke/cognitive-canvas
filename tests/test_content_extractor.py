@@ -2,6 +2,7 @@ import pytest
 from bs4 import BeautifulSoup
 import requests
 from requests.exceptions import Timeout, ConnectionError, HTTPError
+from src.core.exceptions.exceptions import URLFormatException
 from src.services.content_extractor import ContentExtractor
 
 @pytest.fixture
@@ -155,3 +156,10 @@ def test_extract_from_text_with_special_chars(extractor):
     
     assert "👋" in result["content"], "Special characters/emojis should be preserved"
     assert result["content"] == "Hello 👋 World! @#$%", "Special characters not cleaned properly"
+
+
+def test_extract_from_null_url(extractor):
+    """Test extraction from a null URL"""
+    url = None
+    with pytest.raises(URLFormatException):
+        extractor.extract_from_url(url)
