@@ -14,21 +14,19 @@ class MCPServer:
         
     
     def store_content_tool(self):
-
+        
         try:
             return store_content()
         except Exception as e:
             return f"Error storing content: {(e)}"
 
-    def query_content_tool(self):
-        
+    def query_content_tool(self): 
         try:
             return query_content()
         except Exception as e:
             return f"Error querying content: {(e)}"
 
-    def generate_quiz_tool(self):
-        
+    def generate_quiz_tool(self): 
         try:
             return generate_quiz()
         except Exception as e:
