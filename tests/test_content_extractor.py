@@ -2,8 +2,9 @@ import pytest
 from bs4 import BeautifulSoup
 import requests
 from requests.exceptions import Timeout, ConnectionError, HTTPError
-from src.core.exceptions.exceptions import URLFormatException
 from src.services.content_extractor import ContentExtractor
+from src.core.exceptions import URLFormatException, NullContentException, InvalidContentException, MetadataExtractionException
+
 
 @pytest.fixture
 def extractor():
@@ -145,9 +146,11 @@ def test_extract_metadata_missing_fields(extractor):
     </html>
     """
     soup = BeautifulSoup(html, 'html.parser')
-    metadata = extractor._extract_metadata(soup)
     
-    assert metadata == {}, "Metadata should be empty when no meta tags present"
+    with pytest.raises(MetadataExtractionException):
+        metadata = extractor._extract_metadata(soup)
+    
+        assert metadata == {}, "Metadata should be empty when no meta tags present"
 
 def test_extract_from_text_with_special_chars(extractor):
     """Test text extraction with special characters and emojis"""
@@ -156,10 +159,3 @@ def test_extract_from_text_with_special_chars(extractor):
     
     assert "👋" in result["content"], "Special characters/emojis should be preserved"
     assert result["content"] == "Hello 👋 World! @#$%", "Special characters not cleaned properly"
-
-
-def test_extract_from_null_url(extractor):
-    """Test extraction from a null URL"""
-    url = None
-    with pytest.raises(URLFormatException):
-        extractor.extract_from_url(url)

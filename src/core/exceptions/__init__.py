@@ -1,9 +1,15 @@
 from .exceptions import (
     BaseException, 
-    URLFormatException
+    URLFormatException,
+    NullContentException, 
+    InvalidContentException, 
+    MetadataExtractionException
 )
 
 __all__ = [
     "BaseException",
-    "URLFormatException"
+    "URLFormatException",
+    "NullContentException",
+    "InvalidContentException",
+    "MetadataExtractionException"
 ]
