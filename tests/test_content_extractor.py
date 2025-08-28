@@ -149,8 +149,6 @@ def test_extract_metadata_missing_fields(extractor):
     
     with pytest.raises(MetadataExtractionException):
         metadata = extractor._extract_metadata(soup)
-    
-        assert metadata == {}, "Metadata should be empty when no meta tags present"
 
 def test_extract_from_text_with_special_chars(extractor):
     """Test text extraction with special characters and emojis"""
