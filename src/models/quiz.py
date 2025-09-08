@@ -8,7 +8,7 @@ class QuizQuestion(BaseModel):
     topic: str = Field(description="The topic where the question is based on")
     question: str
     explanation: str
-    choice: List[str] = Field(description="List of possible choices for the question")
+    choice: List[str] = Field(description="List of possible choices for the question", optional=True)
 
 class Quiz(BaseModel):
     """Complete Quiz structure"""
