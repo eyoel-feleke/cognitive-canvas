@@ -76,7 +76,7 @@ def test_generate_quiz_success():
     )
 
     # Test multiple choice quiz generation
-    with patch.object(service.client.chat.completions, 'create', return_value=mock_mcq_quiz) as mock_create:
+    with patch.object(service.client.chat.completions, 'create', return_value=mock_mcq_quiz):
         quiz1 = service.generate_mcq_quiz(
             content_summaries=["This is a test summary."],
             category="General Knowledge",
@@ -89,7 +89,7 @@ def test_generate_quiz_success():
     assert quiz1.type == "multiple_choice", "Quiz type should be multiple_choice"
     
     # Test true/false quiz generation
-    with patch.object(service.client.chat.completions, 'create', return_value=mock_tf_quiz) as mock_create:
+    with patch.object(service.client.chat.completions, 'create', return_value=mock_tf_quiz):
         quiz2 = service.generate_true_false_quiz(
             content_summaries=["This is a test summary."],
             category="General Knowledge",
@@ -102,7 +102,7 @@ def test_generate_quiz_success():
     assert quiz2.type == "true_false", "Quiz type should be true_false"
     
     # Test fill in the blank quiz generation
-    with patch.object(service.client.chat.completions, 'create', return_value=mock_fib_quiz) as mock_create:
+    with patch.object(service.client.chat.completions, 'create', return_value=mock_fib_quiz):
         quiz3 = service.generate_fill_in_blank_quiz(
             content_summaries=["This is a test summary."],
             category="General Knowledge",

@@ -5,7 +5,7 @@ import os
 
 from src.models.quiz import Quiz, QuizQuestion, QuizResult
 
-api_key = os.getenv("OPENAI_API_KEY")
+#api_key = os.getenv("OPENAI_API_KEY")
 
 class QuizService:
     def __init__(self, api_key: str):

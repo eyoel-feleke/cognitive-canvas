@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List, Literal
+from typing import List, Literal, Optional
 from uuid import UUID, uuid4
 
 class QuizQuestion(BaseModel):
@@ -8,7 +8,7 @@ class QuizQuestion(BaseModel):
     topic: str = Field(description="The topic where the question is based on")
     question: str
     explanation: str
-    choice: List[str] = Field(description="List of possible choices for the question", optional=True)
+    choice: Optional[List[str]] = Field(description="List of possible choices for the question")
 
 class Quiz(BaseModel):
     """Complete Quiz structure"""
