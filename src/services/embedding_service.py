@@ -13,20 +13,48 @@ class EmbeddingModelS(Enum):
 
 class EmbeddingService:
     def __init__(self, model_name=EmbeddingModelS.MINI_LM_L6_V2):
-        self.model = None
         self.model = self._initialize_model(model_name)
 
-
     def _initialize_model(self, model_name: EmbeddingModelS) -> SentenceTransformer:
+        """
+        Initialize and load the sentence transformer model.
+        
+        Args:
+            model_name: EmbeddingModelS enum value specifying which model to load
+            
+        Returns:
+            SentenceTransformer: Loaded sentence transformer model
+            
+        Raises:
+            ValueError: If model_name is not an instance of EmbeddingModelS Enum
+        """
         if not isinstance(model_name, EmbeddingModelS):
             raise ValueError(f"Invalid model name: {model_name}. Must be an instance of EmbeddingModelS Enum.")
         
-        if self.model:
-            return self.model
         self.model = SentenceTransformer(model_name.value)
         return self.model
 
-    def generate_embedding(self, text: list[str]) -> list[float]:
+    def generate_embedding(self, text: Union[str, List[str]]) -> np.ndarray:
+        """
+        Generate embeddings for input text(s).
+        
+        Args:
+            text: A single string or a list of strings to encode
+            
+        Returns:
+            np.ndarray: Embedding vector(s) for the input text(s).
+                       Shape is (embedding_dim,) for single string input,
+                       or (n, embedding_dim) for list of n strings.
+            
+        Example:
+            >>> service = EmbeddingService()
+            >>> # Single text
+            >>> emb = service.generate_embedding("Hello world")
+            >>> # Multiple texts
+            >>> embs = service.generate_embedding(["Hello world", "Hi there"])
+        """
+        if isinstance(text, str):
+            text = [text]
         return self.model.encode(text)
 
     def clear_model(self):
@@ -292,9 +320,6 @@ class EmbeddingService:
         # Convert to tensor if needed
         if isinstance(embeddings, list):
             embeddings = torch.tensor(embeddings)
-            
-        # Compute similarity matrix
-        sim_matrix = util.cos_sim(embeddings, embeddings)
         
         # Use sentence-transformers community detection
         clusters = util.community_detection(embeddings, min_community_size=min_cluster_size, threshold=threshold)

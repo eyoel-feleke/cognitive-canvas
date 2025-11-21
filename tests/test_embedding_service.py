@@ -43,7 +43,7 @@ class TestEmbeddingServiceInitialization:
     def test_initialization_with_invalid_model(self):
         """Test that invalid model raises ValueError."""
         with pytest.raises(ValueError):
-            service = EmbeddingService("invalid-model")
+            EmbeddingService("invalid-model")
 
 
 class TestEmbeddingGeneration:
