@@ -1,13 +1,13 @@
 import pytest
 import torch
 import numpy as np
-from src.services.embedding_service import EmbeddingService, EmbeddingModelS
+from src.services.embedding_service import EmbeddingService, EmbeddingModels
 
 
 @pytest.fixture
 def embedding_service():
     """Fixture for creating an EmbeddingService instance."""
-    return EmbeddingService(EmbeddingModelS.MINI_LM_L6_V2)
+    return EmbeddingService(EmbeddingModels.MINI_LM_L6_V2)
 
 
 @pytest.fixture
@@ -37,7 +37,7 @@ class TestEmbeddingServiceInitialization:
         
     def test_initialization_with_specific_model(self):
         """Test initialization with a specific model."""
-        service = EmbeddingService(EmbeddingModelS.ALL_DISTILROBERTA_V1)
+        service = EmbeddingService(EmbeddingModels.ALL_DISTILROBERTA_V1)
         assert service.model is not None
         
     def test_initialization_with_invalid_model(self):
@@ -398,7 +398,7 @@ class TestModelManagement:
         
     def test_model_caching(self):
         """Test that model is cached and reused."""
-        service = EmbeddingService(EmbeddingModelS.MINI_LM_L6_V2)
+        service = EmbeddingService(EmbeddingModels.MINI_LM_L6_V2)
         
         # Get reference to model
         model1 = service.model

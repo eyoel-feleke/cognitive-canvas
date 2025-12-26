@@ -4,7 +4,7 @@ import torch
 import numpy as np
 from typing import List, Tuple, Union, Dict
 
-class EmbeddingModelS(Enum): 
+class EmbeddingModels(Enum): 
     MINI_LM_L6_V2 = "all-MiniLM-L6-v2"
     PARAPHRASE_MPNET_BASE_V2 = "paraphrase-mpnet-base-v2"
     DISTILBERT_BASE_NLI_STSB = "distilbert-base-nli-stsb-mean-tokens"
@@ -12,27 +12,26 @@ class EmbeddingModelS(Enum):
     ALL_MPNET_BASE_V2 = "all-mpnet-base-v2"
 
 class EmbeddingService:
-    def __init__(self, model_name=EmbeddingModelS.MINI_LM_L6_V2):
+    def __init__(self, model_name=EmbeddingModels.MINI_LM_L6_V2):
         self.model = self._initialize_model(model_name)
 
-    def _initialize_model(self, model_name: EmbeddingModelS) -> SentenceTransformer:
+    def _initialize_model(self, model_name: EmbeddingModels) -> SentenceTransformer:
         """
         Initialize and load the sentence transformer model.
         
         Args:
-            model_name: EmbeddingModelS enum value specifying which model to load
+            model_name: EmbeddingModels enum value specifying which model to load
             
         Returns:
             SentenceTransformer: Loaded sentence transformer model
             
         Raises:
-            ValueError: If model_name is not an instance of EmbeddingModelS Enum
+            ValueError: If model_name is not an instance of EmbeddingModels Enum
         """
-        if not isinstance(model_name, EmbeddingModelS):
-            raise ValueError(f"Invalid model name: {model_name}. Must be an instance of EmbeddingModelS Enum.")
+        if not isinstance(model_name, EmbeddingModels):
+            raise ValueError(f"Invalid model name: {model_name}. Must be an instance of EmbeddingModels Enum.")
         
-        self.model = SentenceTransformer(model_name.value)
-        return self.model
+        return SentenceTransformer(model_name.value)
 
     def generate_embedding(self, text: Union[str, List[str]]) -> np.ndarray:
         """
@@ -88,8 +87,12 @@ class EmbeddingService:
         # Convert to tensors if needed
         if isinstance(embedding1, list):
             embedding1 = torch.tensor(embedding1)
+        elif isinstance(embedding1, np.ndarray):
+            embedding1 = torch.from_numpy(embedding1)
         if isinstance(embedding2, list):
             embedding2 = torch.tensor(embedding2)
+        elif isinstance(embedding2, np.ndarray):
+            embedding2 = torch.from_numpy(embedding2)
             
         return util.cos_sim(embedding1, embedding2).item()
 
@@ -117,8 +120,13 @@ class EmbeddingService:
         # Convert to tensors if needed
         if isinstance(embeddings1, list):
             embeddings1 = torch.tensor(embeddings1)
-        if embeddings2 is not None and isinstance(embeddings2, list):
-            embeddings2 = torch.tensor(embeddings2)
+        elif isinstance(embeddings1, np.ndarray):
+            embeddings1 = torch.from_numpy(embeddings1)
+        if embeddings2 is not None:
+            if isinstance(embeddings2, list):
+                embeddings2 = torch.tensor(embeddings2)
+            elif isinstance(embeddings2, np.ndarray):
+                embeddings2 = torch.from_numpy(embeddings2)
             
         if embeddings2 is None:
             embeddings2 = embeddings1
@@ -153,8 +161,12 @@ class EmbeddingService:
         # Convert to tensors if needed
         if isinstance(query_embedding, list):
             query_embedding = torch.tensor(query_embedding)
+        elif isinstance(query_embedding, np.ndarray):
+            query_embedding = torch.from_numpy(query_embedding)
         if isinstance(candidate_embeddings, list):
             candidate_embeddings = torch.tensor(candidate_embeddings)
+        elif isinstance(candidate_embeddings, np.ndarray):
+            candidate_embeddings = torch.from_numpy(candidate_embeddings)
             
         # Compute similarities
         similarities = util.cos_sim(query_embedding, candidate_embeddings)[0]
@@ -241,8 +253,12 @@ class EmbeddingService:
         # Convert to tensor if needed
         if isinstance(corpus_embeddings, list):
             corpus_embeddings = torch.tensor(corpus_embeddings)
+        elif isinstance(corpus_embeddings, np.ndarray):
+            corpus_embeddings = torch.from_numpy(corpus_embeddings)
         if isinstance(query_embeddings, list):
             query_embeddings = torch.tensor(query_embeddings)
+        elif isinstance(query_embeddings, np.ndarray):
+            query_embeddings = torch.from_numpy(query_embeddings)
         
         results = []
         for query_emb in query_embeddings:
@@ -275,6 +291,8 @@ class EmbeddingService:
         # Convert to tensor if needed
         if isinstance(embeddings, list):
             embeddings = torch.tensor(embeddings)
+        elif isinstance(embeddings, np.ndarray):
+            embeddings = torch.from_numpy(embeddings)
             
         # Compute similarity matrix
         sim_matrix = util.cos_sim(embeddings, embeddings)
@@ -320,6 +338,8 @@ class EmbeddingService:
         # Convert to tensor if needed
         if isinstance(embeddings, list):
             embeddings = torch.tensor(embeddings)
+        elif isinstance(embeddings, np.ndarray):
+            embeddings = torch.from_numpy(embeddings)
         
         # Use sentence-transformers community detection
         clusters = util.community_detection(embeddings, min_community_size=min_cluster_size, threshold=threshold)

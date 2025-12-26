@@ -373,7 +373,6 @@ dependencies = [
     { name = "mcp" },
     { name = "openai" },
     { name = "pydantic" },
-    { name = "pytest" },
     { name = "python-dotenv" },
     { name = "requests" },
     { name = "sentence-transformers" },
@@ -383,14 +382,6 @@ dependencies = [
 test = [
     { name = "httpx" },
     { name = "pytest" },
-    { name = "pytest-asyncio" },
-    { name = "pytest-cov" },
-    { name = "pytest-mock" },
-]
-
-[package.dev-dependencies]
-test = [
-    { name = "httpx" },
     { name = "pytest-asyncio" },
     { name = "pytest-cov" },
     { name = "pytest-mock" },
@@ -407,24 +398,15 @@ requires-dist = [
     { name = "mcp", specifier = ">=1.12.1" },
     { name = "openai", specifier = ">=1.97.1" },
     { name = "pydantic", specifier = ">=2.11.7" },
-    { name = "pytest", specifier = ">=8.4.1" },
-    { name = "pytest", marker = "extra == 'test'", specifier = ">=7.0.0" },
+    { name = "pytest", marker = "extra == 'test'", specifier = ">=8.4.1" },
     { name = "pytest-asyncio", marker = "extra == 'test'", specifier = ">=0.21.0" },
     { name = "pytest-cov", marker = "extra == 'test'", specifier = ">=4.0.0" },
-    { name = "pytest-mock", marker = "extra == 'test'", specifier = ">=3.10.0" },
+    { name = "pytest-mock", marker = "extra == 'test'", specifier = ">=3.14.1" },
     { name = "python-dotenv", specifier = ">=1.1.1" },
     { name = "requests", specifier = ">=2.32.4" },
     { name = "sentence-transformers", specifier = ">=5.0.0" },
 ]
 provides-extras = ["test"]
-
-[package.metadata.requires-dev]
-test = [
-    { name = "httpx", specifier = ">=0.28.1" },
-    { name = "pytest-asyncio", specifier = ">=1.1.0" },
-    { name = "pytest-cov", specifier = ">=6.2.1" },
-    { name = "pytest-mock", specifier = ">=3.14.1" },
-]
 
 [[package]]
 name = "coverage"

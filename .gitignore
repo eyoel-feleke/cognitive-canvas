@@ -19,3 +19,7 @@ htmlcov/
 .coverage
 coverage.xml
 coverage.json
+
+# LLM markdown files
+.github/**/*.md
+docs/**/*.md
