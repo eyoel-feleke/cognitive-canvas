@@ -134,7 +134,9 @@ class TestQuizModels:
         assert question.choice == ["6", "7", "8", "9"], f"Expected ['6','7','8','9'], got {question.choice}"
     def test_quiz_creation(self, sample_quiz):
         """Testing Quiz Creation"""
+        ALLOWED_TYPES = ["multiple_choice", "true_false", "fill_in_the_blank"]
         assert sample_quiz.title == "Python Basics Quiz", f"Expected 'Python Basics Quiz', got {sample_quiz.title}"
+        assert sample_quiz.type in ALLOWED_TYPES, f"Expected type to be one of {ALLOWED_TYPES}, got {sample_quiz.type}"
         assert sample_quiz.quiz_id is not None, f"Expected quiz_id to not be None, got {sample_quiz.quiz_id}"
         assert len(sample_quiz.questions) == 1, f"Expected 1, got {len(sample_quiz.questions)}"
         assert isinstance(sample_quiz.questions[0], QuizQuestion), f"Expected QuizQuestion, got {type(sample_quiz.questions[0])}"

@@ -26,7 +26,7 @@ class ContentExtractor:
                     "content": "",
                     "url": url,
                     "domain": urlparse(url).netloc,
-                    "metadata": {}
+                    "metadata": {"type": "empty"}
                 }
             
             soup = BeautifulSoup(response.content, 'html.parser')
