@@ -1,6 +1,6 @@
 import pytest
-from unittest.mock import MagicMock, Mock, patch
-from openai import RateLimitError, APIError, APITimeoutError
+from unittest.mock import Mock
+from openai import RateLimitError
 from src.services.categorization_service import CategorizationService, CategoryResults
 
 

@@ -7,10 +7,10 @@ import instructor
 from pydantic import BaseModel, Field
 
 class CategoryResults(BaseModel): 
-    category : str = Field(..., description="Category of the content, e.g., Technology, Science, Business, etc.")
-    confidence : float = Field(..., ge=0.0, le=1.0, description="Confidence score between 0 and 1.")
-    tags : List[str] = Field(..., description="List of relevant tags related to the content.")
-    summary : str = Field(..., description="A short summary of the content.")
+    category: str = Field(..., description="Category of the content, e.g., Technology, Science, Business, etc.")
+    confidence: float = Field(..., ge=0.0, le=1.0, description="Confidence score between 0 and 1.")
+    tags: List[str] = Field(..., description="List of relevant tags related to the content.")
+    summary: str = Field(..., description="A short summary of the content.")
     
 class CategorizationService:
     """A categorization service that uses AI to categorize content.
@@ -27,7 +27,7 @@ class CategorizationService:
     
     def _generate_cache_key(self, title: str, content: str) -> str:
         """Create a unique cache key based on title and content."""
-        return hashlib.md5((title + content).encode("utf-8")).hexdigest()
+        return hashlib.blake2b((title + content).encode("utf-8")).hexdigest()
     def categorize_content(self, title: str, content: str, max_retries: int = 3, retry_delay: int = 2) -> CategoryResults: 
         """Categorize content using LLM"""
         if not content.strip():
@@ -39,7 +39,7 @@ class CategorizationService:
         
         prompt = f"""
         Analyze the given content and provide: 
-        1. A general category(e.g Technology, Science, Business, etc.)
+        1. A general category (e.g Technology, Science, Business, etc.)
         2. Confidence score between 0-1 (float)
         3. 3 to 5 relevant tags (e.g., Machine Learning, Python, etc.)
         4. A short summary that gives a brief overview of the content. 
