@@ -46,7 +46,7 @@ class TestContentRecordAndMetadata:
             title = "Sample Metadata", 
             author="Author Name",
             abstract="This is a synopsis of the sample metadata.",
-            keywords=["keyword1", "testing error"],
+            keywords=["keyword1", "keyword2"],
             date_published=datetime.now(),
             citation="Citation Example" 
         )
