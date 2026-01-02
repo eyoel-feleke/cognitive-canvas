@@ -46,7 +46,7 @@ class CategorizationService:
         
         Title: {title}
         Content : 
-        {content[:1500]}
+        {content}
         """ 
         
         for attempt in range(1, max_retries + 1):
