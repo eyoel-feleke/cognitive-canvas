@@ -5,7 +5,7 @@ __pycache__/
 /data/logs/
 
 .venv/
-
+.vscode/
 # Test coverage files
 *.log
 *.tmp
