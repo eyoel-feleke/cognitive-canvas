@@ -1,4 +1,5 @@
 import chromadb
+from chromadb.api.types import GetResult, QueryResult
 from uuid import uuid4
 from datetime import datetime
 from typing import List, Dict, Optional, Any
@@ -222,3 +223,28 @@ class VectorDatabase:
                 self.collection = None
         except Exception as e:
             raise VectorDatabaseError(f"Failed to close database client: {str(e)}")
+
+
+
+if __name__ == "__main__":
+
+    # Example usage
+    db = VectorDatabase()
+    
+    # for _ in range(5):
+    #     content = {
+    #         "content": f"This is a sample content {_} for testing.",
+    #         "title": f"Sample Content {_}",
+    #         "tags": ["test", "sample"],
+    #         "summary": "A brief summary of the sample content.",
+    #         "source_url": "http://example.com/sample"
+    #     }
+    #     category = f"TestCategory {_}"
+    #     content_id = db.store(content, category)
+    #     print(f"Stored content with ID: {content_id}")
+
+    
+    category_results = db.get_by_category("TestCategory 1", limit=2)
+    print("Category Results:", category_results)
+
+    db.close()

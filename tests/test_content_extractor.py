@@ -4,7 +4,7 @@ import requests
 from requests.exceptions import Timeout, ConnectionError, HTTPError
 from src.services.content_extractor import ContentExtractor
 from src.core.exceptions import URLFormatException, NullContentException, InvalidContentException, MetadataExtractionException
-
+import requests_mock
 
 @pytest.fixture
 def extractor():
