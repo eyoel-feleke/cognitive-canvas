@@ -145,9 +145,9 @@ class ContentManager:
                 category = custom_category
                 tags = custom_tags if custom_tags is not None else []
             else:
-                category = cat_result.get('category')
-                tags = custom_tags if custom_tags is not None else cat_result.get('tags', [])
-            summary = cat_result.get("summary", "")
+                category = cat_result.category
+                tags = custom_tags if custom_tags is not None else cat_result.tags
+            summary = extracted_content.get("summary", "")
             
             # Step 4: Create metadata
             logger.debug("Creating content metadata")
@@ -242,8 +242,8 @@ class ContentManager:
                 category = custom_category
                 tags = custom_tags if custom_tags is not None else []
             else:
-                category = cat_result.get('category')
-                tags = custom_tags if custom_tags is not None else cat_result.get('tags', [])
+                category = cat_result.category
+                tags = custom_tags if custom_tags is not None else cat_result.tags
             summary = extracted_text.get("summary", "")
             # Step 4: Create metadata
             logger.debug("Creating content metadata")
