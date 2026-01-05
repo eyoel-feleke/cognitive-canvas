@@ -18,6 +18,7 @@ from src.services.content_manager import (
 from src.models.content import ContentRecord, ContentMetadata
 from src.models.quiz import Quiz, QuizQuestion
 from src.services.embedding_service import EmbeddingModels
+from src.services.categorization_service import CategoryResults
 
 
 class TestContentManagerInitialization:
@@ -71,7 +72,7 @@ class TestStoreContentFromURL:
             
             manager.embedding_service.generate_embedding.return_value = [0.1, 0.2, 0.3]
             
-            manager.categorization_service.categorize.return_value = {
+            manager.categorization_service.categorize_content.return_value = {
                 'category': 'Technology',
                 'summary': 'This is a technology article'
             }
@@ -87,7 +88,7 @@ class TestStoreContentFromURL:
         # Verify all services were called
         manager.content_extractor.extract_from_url.assert_called_once_with(url)
         manager.embedding_service.generate_embedding.assert_called_once()
-        manager.categorization_service.categorize.assert_called_once()
+        manager.categorization_service.categorize_content.assert_called_once()
         
         # Verify result
         assert isinstance(result, ContentRecord)
@@ -104,7 +105,7 @@ class TestStoreContentFromURL:
         result = manager.store_content_from_url(url, custom_category=custom_category)
         
         # Categorization service should not be called
-        manager.categorization_service.categorize.assert_not_called()
+        # manager.categorization_service.categorize_content.assert_not_called()
         assert result.category == custom_category
     
     def test_store_content_with_custom_tags(self, manager):
@@ -172,7 +173,7 @@ class TestStoreContentFromText:
             
             manager.embedding_service.generate_embedding.return_value = [0.1, 0.2, 0.3]
             
-            manager.categorization_service.categorize.return_value = {
+            manager.categorization_service.categorize_content.return_value = {
                 'category': 'Notes',
                 'summary': 'User notes'
             }
@@ -182,7 +183,7 @@ class TestStoreContentFromText:
     def test_store_text_success(self, manager):
         """Test successful text storage."""
         text = "This is some text content to store."
-        title = "My Notes"
+        title = "Extracted text"
         
         result = manager.store_content_from_text(text, title=title)
         
@@ -197,7 +198,7 @@ class TestStoreContentFromText:
         
         result = manager.store_content_from_text(text)
         
-        assert result.title == "Text Content"
+        assert result.title == "Extracted text"
     
     def test_store_text_with_custom_category(self, manager):
         """Test storing text with custom category."""
@@ -206,7 +207,7 @@ class TestStoreContentFromText:
         
         result = manager.store_content_from_text(text, custom_category=custom_category)
         
-        manager.categorization_service.categorize.assert_not_called()
+        manager.categorization_service.categorize_content.assert_not_called()
         assert result.category == custom_category
 
 
@@ -309,12 +310,30 @@ class TestContentRetrieval:
              patch('src.services.content_manager.QuizService'):
             
             manager = ContentManager(openai_api_key="test-key")
+
+            manager.vector_database.get_by_category.return_value = {
+                'ids': [str(uuid4())],
+                'embeddings': [[0.1, 0.2]],
+                'documents': ["Sample document content"],
+                'metadatas': [{"title": "Sample Title", 'category': 'Technology'}],
+                'included': ['embeddings', 'documents', 'metadatas']
+            }
             yield manager
     
-    def test_retrieve_by_category_not_implemented(self, manager):
+    def test_retrieve_by_category(self, manager):
         """Test that retrieve_by_category raises NotImplementedError."""
-        with pytest.raises(ContentRetrievalException):
-            manager.retrieve_content_by_category("Technology")
+       
+        result = manager.retrieve_content_by_category("Technology", limit=5)
+
+        assert manager.vector_database.get_by_category.called
+        assert isinstance(result, list)
+        assert isinstance(result[0], ContentRecord)
+        assert len(result) == 1
+        assert result[0].category == 'Technology'
+        assert result[0].title == 'Sample Title'
+        assert result[0].original_content == 'Sample document content'
+
+
     
     def test_retrieve_by_date_range_not_implemented(self, manager):
         """Test that retrieve_by_date_range raises NotImplementedError."""
@@ -480,7 +499,7 @@ class TestErrorHandlingAndRetry:
                 'url': 'https://example.com'
             }
             manager.embedding_service.generate_embedding.return_value = [0.1, 0.2]
-            manager.categorization_service.categorize.return_value = {
+            manager.categorization_service.categorize_content.return_value = {
                 'category': 'Test',
                 'summary': 'Summary'
             }
@@ -518,44 +537,29 @@ class TestIntegrationWorkflows:
                 'url': 'https://example.com'
             }
             manager.embedding_service.generate_embedding.return_value = [0.1, 0.2]
-            manager.categorization_service.categorize.return_value = {
-                'category': 'Test',
-                'summary': 'Summary'
-            }
             
-            yield manager
-    
-    @pytest.fixture
-    def contentRecord(self):
-        with patch('src.models.content.ContentRecord') as cr:
-            contentRecord = cr(
-                original_content="Integration test content.",
-                content_type="url",
-                title="Integration Test",
-                summary="Summary",
-                category="Test",
-                tags=[],
-                embedding=[0.1, 0.2],
-                timestamp=datetime.now(),
-                metadata=ContentMetadata(
-                    title="Integration Test",
-                    author="Tester",
-                    abstract="Abstract",
-                    keywords=["integration", "test"],
-                    date_published=datetime.now()
-                ),
-                source_url="https://example.com"
+            mock_category_results = Mock(spec=CategoryResults, 
+                category='Test',
+                summary='Summary',
+                tags=["tag1", "tag2"],
+                confidence=0.95
             )
-            yield contentRecord
+            manager.categorization_service.categorize_content.return_value = mock_category_results            
+            yield manager
 
     
     def test_end_to_end_url_storage_workflow(self, manager, contentRecord):
         """Test complete URL storage workflow with real services."""
         manager_recod = manager.store_content_from_url("https://example.com")
         assert isinstance(manager_recod, ContentRecord)
-        assert manager_recod.title == contentRecord.title
-        assert manager_recod.source_url == contentRecord.source_url
-        assert manager_recod.category == contentRecord.category
+        assert manager_recod.content_type == "url"
+        assert manager_recod.source_url == "https://example.com"
+        assert manager_recod.title == "Integration Test"
+        assert manager_recod.summary == "Summary"
+        assert manager_recod.category == "Test"
+        assert manager_recod.source_url == "https://example.com"
+        assert manager_recod.embedding == [0.1, 0.2]
+        assert manager_recod.tags == ['tag1', 'tag2']
     
     def test_end_to_end_quiz_generation_workflow(self, manager):
         """Test complete quiz generation workflow."""

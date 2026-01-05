@@ -121,32 +121,68 @@ class ContentManager:
         try:
             # Step 1: Extract content
             logger.debug("Extracting content from URL")
-            # TODO: Implement content extraction logic
-            
+            # Implement content extraction logic
+            extracted_content = self.content_extractor.extract_from_url(url)
+            if not isinstance(extracted_content, dict):
+                raise ContentStorageException("Content extraction failed: Invalid content format")
+            if extracted_content.get("error"):
+                raise ContentStorageException(f"Content extraction failed: {extracted_content['error']}")
+            title = extracted_content.get("title", "No Title")
+            content_text = (extracted_content.get("content") or "").strip()
+            if not content_text:
+                raise ContentStorageException("No content extracted")
+
             # Step 2: Generate embedding
             logger.debug("Generating embedding for content")
-            # TODO: Implement embedding generation logic
+            # Implement embedding generation logic
+            embedding = self.embedding_service.generate_embedding(extracted_content)
 
             # Step 3: Categorize content
             logger.debug("Categorizing content with AI")
-            # TODO: Implement categorization logic with AI and handle custom_category
-                
+            # Implement categorization logic with AI and handle custom_category
+            cat_result = self.categorization_service.categorize_content(extracted_content)
+            if custom_category is not None:
+                category = custom_category
+                tags = custom_tags if custom_tags is not None else []
+            else:
+                category = cat_result.get('category')
+                tags = custom_tags if custom_tags is not None else cat_result.get('tags', [])
+            summary = cat_result.get("summary", "")
             
             # Step 4: Create metadata
             logger.debug("Creating content metadata")
-            # TODO: Implement metadata extraction logic
-            
+            # Implement metadata extraction logic
+            raw_metadata = extracted_content.get("metadata", {})
+            metadata = ContentMetadata(
+                title=title,
+                author=raw_metadata.get("author", "Unknown"),
+                abstract=raw_metadata.get("abstract", ""),
+                keywords=raw_metadata.get("keywords", []),
+                date_published=raw_metadata.get("date_published", datetime.now())
+            )
             # Step 5: Create content record
-            # TODO: Implement ContentRecord creation logic
+            # Implement ContentRecord creation logic
             logger.debug("Creating content record")
-            
+            record = extracted_content.get("content", "")
+            content_record = ContentRecord(
+                original_content=record,
+                content_type="url",
+                title=title,
+                category=category,
+                summary=summary,
+                tags=tags,
+                embedding=embedding,
+                timestamp=datetime.now(),
+                source_url=url,
+                metadata=metadata
+            )
             # Step 6: Store in vector database
             logger.debug("Storing content in vector database")
-            # TODO: Implement vector_database.store() method
-            # self.vector_database.store(content_record)
+            # Implement vector_database.store() method
+            self.vector_database.store(content_record)
             
             logger.info(f"Successfully stored content from URL: {url}")
-            # TODO: return the created content_record
+            # return the created content_record
             return content_record
             
         except (URLFormatException, NullContentException, InvalidContentException) as e:
@@ -188,31 +224,62 @@ class ContentManager:
         try:
             # Step 1: Extract/clean text
             logger.debug("Extracting/cleaning text")
-            # TODO: Implement text extraction logic
-            
+            # Implement text extraction logic
+            extracted_text = self.content_extractor.extract_from_text(text)
+            text = (extracted_text.get("content") or "").strip()
+            if not text:
+                raise ContentStorageException("No valid text content provided")
+            title = extracted_text.get("title", "No Title")
             # Step 2: Generate embedding
             logger.debug("Generating embedding for text")
-            # TODO: Implement embedding generation logic
-            
+            # Implement embedding generation logic
+            embedding = self.embedding_service.generate_embedding(text)
             # Step 3: Categorize
             logger.debug("Categorizing text with AI")
-            # TODO: Implement categorization logic with AI and handle custom_category
-            
+            # Implement categorization logic with AI and handle custom_category
+            cat_result = self.categorization_service.categorize_content(extracted_text)
+            if custom_category is not None:
+                category = custom_category
+                tags = custom_tags if custom_tags is not None else []
+            else:
+                category = cat_result.get('category')
+                tags = custom_tags if custom_tags is not None else cat_result.get('tags', [])
+            summary = extracted_text.get("summary", "")
             # Step 4: Create metadata
             logger.debug("Creating content metadata")
-            # TODO: Implement metadata creation logic
-            
+            # Implement metadata creation logic
+            raw_metadata = extracted_text.get("metadata", {})
+            metadata = ContentMetadata(
+                title=title,
+                author=raw_metadata.get("author", "Unknown"),
+                abstract=raw_metadata.get("abstract", ""),
+                keywords=raw_metadata.get("keywords", []),
+                date_published=raw_metadata.get("date_published", datetime.now())
+            )
             # Step 5: Create content record
             logger.debug("Creating content record")
-            # TODO: Implement ContentRecord creation logic
-            
+            # Implement ContentRecord creation logic
+            record = extracted_text.get("content", "")
+            content_record = ContentRecord(
+                original_content=record,
+                content_type="text",
+                text = text,
+                title=title,
+                category=category,
+                summary=summary,
+                tags=tags,
+                embedding=embedding,
+                timestamp=datetime.now(),
+                source_url=None,
+                metadata=metadata
+            )
             # Step 6: Store in vector database
             logger.debug("Storing text content in vector database")
-            # TODO: Implement vector_database.store() method
-            # self.vector_database.store(content_record)
+            # Implement vector_database.store() method
+            self.vector_database.store(content_record)
             
             logger.info("Successfully stored text content")
-            # TODO: return the created content_record
+            # return the created content_record
             return content_record
             
         except Exception as e:
@@ -238,20 +305,31 @@ class ContentManager:
         """
         logger.info(f"Starting bulk storage for {len(urls)} URLs")
         
-        # TODO: Implement bulk storage logic
+        # Implement bulk storage logic
         # - Initialize results dictionary with success/failed lists
         # - Iterate through URLs and call store_content_from_url for each
         # - Collect success and failure information
         # - Return results summary with counts and details
-        
         results = {
-            'success': [],
-            'failed': [],
-            'total': len(urls),
             'success_count': 0,
-            'failed_count': 0
+            'failed_count': 0,
+            'total': len(urls),
+            'success': [],
+            'failed': []
         }
-        
+        for url in urls:
+            try:
+                record = self.store_content_from_url(
+                    url,
+                    custom_category,
+                    custom_tags
+                )
+                results['success_count']+= 1
+                results['success'].append({'url': url, 'content_id': str(record.content_id)})
+            except ContentStorageException as e:
+                results['failed_count']+= 1
+                results['failed'].append({'url': url, 'error': str(e)})
+
         logger.info(f"Bulk storage complete: {results['success_count']} succeeded, {results['failed_count']} failed")
         return results
     
@@ -276,16 +354,43 @@ class ContentManager:
         logger.info(f"Retrieving content for category: {category}")
         
         try:
-            # TODO: Implement vector_database.get_by_category() method
-            # return self.vector_database.get_by_category(category, limit)
-            raise NotImplementedError("Vector database get_by_category not yet implemented")
+            # Implement vector_database.get_by_category() method
+            result = self.vector_database.get_by_category(category, limit)
+
+            content_records = []
+            for i in range(len(result['ids'])):
+                
+                content_metadata = ContentMetadata(
+                    title=result['metadatas'][i]['title'],
+                    author=result['metadatas'][i].get('author', 'Unknown'),
+                    abstract=result['metadatas'][i].get('abstract', ''),
+                    keywords=result['metadatas'][i].get('keywords', []),
+                    date_published=datetime.fromtimestamp(result['metadatas'][i].get('date_published', datetime.now().timestamp()))
+                )
+
+                content_record = ContentRecord(
+                    content_id=result['ids'][i],
+                    original_content=result['documents'][i],
+                    content_type=result['metadatas'][i].get('content_type', 'unknown'),
+                    title=result['metadatas'][i]['title'],
+                    summary=result['metadatas'][i].get('summary', ''),
+                    category=category,
+                    tags=result['metadatas'][i].get('tags', []),
+                    embedding=result['embeddings'][i],
+                    timestamp=datetime.fromtimestamp(result['metadatas'][i].get('timestamp', datetime.now().timestamp())),
+                    source_url=result['metadatas'][i].get('url', None),
+                    metadata=content_metadata
+                )
+                content_records.append(content_record)
+            return content_records
+            # raise NotImplementedError("Vector database get_by_category not yet implemented")
         except Exception as e:
             logger.error(f"Failed to retrieve content by category: {str(e)}")
             raise ContentRetrievalException(f"Content retrieval failed: {str(e)}")
     
     def retrieve_content_by_date_range(
         self,
-        start_date: datetime,
+        start_date: datetime,   
         end_date: datetime,
         category: Optional[str] = None
     ) -> List[ContentRecord]:
@@ -306,9 +411,9 @@ class ContentManager:
         logger.info(f"Retrieving content from {start_date} to {end_date}")
         
         try:
-            # TODO: Implement vector_database.query_by_date_range() method
-            # return self.vector_database.query_by_date_range(start_date, end_date, category)
-            raise NotImplementedError("Vector database query_by_date_range not yet implemented")
+            # Implement vector_database.query_by_date_range() method
+          return self.vector_database.query_by_date_range(start_date, end_date, category)
+           # raise NotImplementedError("Vector database query_by_date_range not yet implemented")
         except Exception as e:
             logger.error(f"Failed to retrieve content by date range: {str(e)}")
             raise ContentRetrievalException(f"Content retrieval failed: {str(e)}")
@@ -338,16 +443,17 @@ class ContentManager:
         try:
             # Step 1: Generate embedding for query
             logger.debug("Generating embedding for query text")
-            # TODO: Implement query embedding generation
-            
+            #: Implement query embedding generation
+            # query_embedding = self.embedding_service.generate_embedding(query_text)
             # Step 2: Perform similarity search in vector database
             logger.debug("Searching vector database")
-            # TODO: Implement vector_database.similarity_search() method
-            # results = self.vector_database.similarity_search(
-            #     query_embedding, k=top_k, category=category_filter
-            # )
-            # return results
-            raise NotImplementedError("Vector database similarity_search not yet implemented")
+            #: Implement vector_database.similarity_search() method
+            
+            results = self.vector_database.similarity_search(
+                query_texts=query_text, k=top_k, category=category_filter
+            )
+            return results
+            # raise NotImplementedError("Vector database similarity_search not yet implemented")
         except Exception as e:
             logger.error(f"Failed to perform similarity search: {str(e)}")
             raise ContentRetrievalException(f"Similarity search failed: {str(e)}")
@@ -389,24 +495,39 @@ class ContentManager:
         try:
             # Step 1: Retrieve content from category
             logger.debug("Retrieving content from category")
-            # TODO: Implement content retrieval by category
-            # content_records = self.retrieve_content_by_category(category)
-            # if not content_records:
-            #     raise QuizGenerationException(f"No content found for category: {category}")
+            # Implement content retrieval by category
+            content_records = self.retrieve_content_by_category(category)
+            if not content_records:
+                raise QuizGenerationException(f"No content found for category: {category}")
             
             # Step 2: Extract summaries from content
             logger.debug("Extracting summaries from content")
-            # TODO: Extract summaries from retrieved content records
-            
+            # Extract summaries from retrieved content records
+            content_summaries = [record.summary for record in content_records if record.summary]
+            if not content_summaries:
+                raise QuizGenerationException("No content found")
             # Step 3: Generate quiz based on quiz_type
             logger.debug(f"Generating {quiz_type} quiz")
-            # TODO: Implement quiz generation logic
+            # Implement quiz generation logic
             # - Handle mcq, fill_in_blank, and true_false quiz types
             # - Call appropriate quiz_service method
             # - Validate quiz_type and raise exception for unsupported types
-            
+            if quiz_type == "mcq":
+                quiz = self.quiz_service.generate_mcq_quiz(
+                    content_summaries, category, num_questions, difficulty
+                )
+            elif quiz_type == "fill_in_blank":
+                quiz = self.quiz_service.generate_fill_in_blank_quiz(
+                    content_summaries, category, num_questions, difficulty
+                )
+            elif quiz_type == "true_false":
+                quiz = self.quiz_service.generate_true_false_quiz(
+                    content_summaries, category, num_questions, difficulty
+                )
+            else:
+                raise QuizGenerationException(f"Unsupported quiz type: {quiz_type}")
             logger.info(f"Successfully generated quiz")
-            # TODO: return the generated quiz
+            # return the generated quiz
             return quiz
             
         except ContentRetrievalException as e:
@@ -441,9 +562,11 @@ class ContentManager:
         logger.info(f"Generating quiz from {len(content_ids)} content items")
         
         try:
-            # TODO: Implement vector_database.get_by_ids() method
-            # content_records = self.vector_database.get_by_ids(content_ids)
-            raise NotImplementedError("Vector database get_by_ids not yet implemented")
+            #content_ids = self.vector_database.get_by_ids(content_ids)
+            #if not content_ids:
+            raise QuizGenerationException("No content IDs provided")
+            # Implement vector_database.get_by_ids() method
+            
         except Exception as e:
             logger.error(f"Error generating quiz from content IDs: {str(e)}")
             raise QuizGenerationException(f"Quiz generation failed: {str(e)}")
@@ -458,12 +581,12 @@ class ContentManager:
         logger.info("Retrieving content statistics")
         
         try:
-            # TODO: Implement statistics gathering from vector database
+            # Implement statistics gathering from vector database
             # - Get total content count
             # - Get content grouped by categories
             # - Get content grouped by types
             # - Get date range of stored content
-            
+            stats = self.vector_database.get_statistics()
             stats = {
                 'total_content': 0,
                 'categories': {},

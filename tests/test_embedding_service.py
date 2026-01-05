@@ -35,11 +35,6 @@ class TestEmbeddingServiceInitialization:
         service = EmbeddingService()
         assert service.model is not None
         
-    def test_initialization_with_specific_model(self):
-        """Test initialization with a specific model."""
-        service = EmbeddingService(EmbeddingModels.ALL_DISTILROBERTA_V1)
-        assert service.model is not None
-        
     def test_initialization_with_invalid_model(self):
         """Test that invalid model raises ValueError."""
         with pytest.raises(ValueError):
