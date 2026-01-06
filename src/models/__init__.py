@@ -1,11 +1,15 @@
-from .content import Content
-from .quiz import Quiz
-from .responses import QuizQuestion, QuizResponse
+from .content import ContentMetadata, ContentRecord
+from .quiz import Quiz, QuizQuestion, QuizResult
+from .responses import ErrorResponse, SuccessResponse, ToolResponse
 
 
 __all__ = [
-    "Content",
+    "ContentMetadata",
+    "ContentRecord",
     "Quiz",
     "QuizQuestion",
-    "QuizResponse",
+    "QuizResult",
+    "ToolResponse",
+    "ErrorResponse",
+    "SuccessResponse",
 ]
