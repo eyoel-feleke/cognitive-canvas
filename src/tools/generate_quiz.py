@@ -1,14 +1,12 @@
-import mcp
-import src.services.quiz_service as QuizService
+from mcp.server.fastmcp import FastMCP
+from src.services.quiz_service import QuizService
 from src.models.quiz import Quiz
 from typing import List, Literal
 
 
-
-@mcp.tool()
-def generate_quiz(quiz_type:Literal["multiple choice", "fill in the blank", "true or false"], content_summaries: List[str],
+def generate_quiz(quiz_type:Literal["multiple_choice", "fill_in_the_blank", "true_or_false"], content_summaries: List[str],
                       category: str, num_questions: int = 5,
-                      difficulty: str = "mixed") -> Quiz:
+                      difficulty: Literal["easy", "medium", "hard", "mixed"] = "mixed") -> Quiz:
     """Generates a quiz based on content summaries.
     Args:
         quiz_type (Literal["multiple choice", "fill in the blank", "true or false"]): Type of quiz to generate.
@@ -21,10 +19,10 @@ def generate_quiz(quiz_type:Literal["multiple choice", "fill in the blank", "tru
     """
     # Normalize quiz type input
     quiz_type_lower = quiz_type.lower().strip() if isinstance(quiz_type, str) else ""
-    allowed_types = ["multiple_choice", "true_false", "short_answer"]
+    allowed_types = ["multiple_choice", "true_false", "fill_in_the_blank"]
     allowed_difficulties = ["easy", "medium", "hard", "mixed"]
     # Input validation
-    if not quiz_type_lower or not quiz_type_lower in allowed_types:
+    if not quiz_type_lower or quiz_type_lower not in allowed_types:
         raise ValueError("Type must be one of the following strings: multiple choice, fill in the blank, true or false.")
     if not category or isinstance(category, str) == False:
         raise ValueError("Category must be a non-empty string.")
@@ -32,35 +30,41 @@ def generate_quiz(quiz_type:Literal["multiple choice", "fill in the blank", "tru
         raise ValueError("Number of questions must be a positive integer.")
     if difficulty not in allowed_difficulties:
         raise ValueError("Difficulty must be one of: easy, medium, hard, mixed.")
+    # Get API key from environment
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        raise ValueError("OPENAI_API_KEY environment variable is not set.")
+    
+    # Initialize quiz service
+    quiz_service = QuizService(api_key=api_key)
+    
     # Generate the quiz based on the specified type
     try:
             if quiz_type_lower == "multiple_choice":
-                quiz = QuizService().generate_multiple_choice_quiz(
-                    content_summaries=[f"Category: {category}"],
+                quiz = quiz_service.generate_mcq_quiz(
+                    content_summaries=content_summaries,
                     category=category,
                     num_questions=num_questions,
                     difficulty=difficulty
                 )
             elif quiz_type_lower == "true_false":
-                quiz = QuizService().generate_true_false_quiz(
-                    content_summaries=[f"Category: {category}"],
+                quiz = quiz_service.generate_true_false_quiz(
+                    content_summaries=content_summaries,
                     category=category,
                     num_questions=num_questions,
                     difficulty=difficulty
                 )
-            elif quiz_type_lower == "short_answer":
-                quiz = QuizService().generate_short_answer_quiz(
-                    content_summaries=[f"Category: {category}"],
+            elif quiz_type_lower == "fill_in_the_blank":
+                quiz = quiz_service.generate_fill_in_blank_quiz(
+                    content_summaries=content_summaries,
                     category=category,
                     num_questions=num_questions,
                     difficulty=difficulty
                 )
             else:
-                return "Unsupported quiz type."
+                raise ValueError(f"Unsupported quiz type: {quiz_type_lower}")
     except Exception as e:
-        return RuntimeError(f"Quiz generation failed: {e}")
-    except ValueError as e:
-        return ValueError(f"Invalid input: {e}") 
+        raise RuntimeError(f"Quiz generation failed: {e}") 
     
     # Outoutput the generated quiz
     output = [
