@@ -2,6 +2,7 @@ from mcp.server.fastmcp import FastMCP
 from src.services.quiz_service import QuizService
 from src.models.quiz import Quiz
 from typing import List, Literal
+import os
 
 
 def generate_quiz(quiz_type:Literal["multiple_choice", "fill_in_the_blank", "true_or_false"], content_summaries: List[str],
