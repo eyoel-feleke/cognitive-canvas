@@ -1,13 +1,21 @@
 from datetime import datetime
 from typing import Dict, Any
 from src.services.vector_database import VectorDatabase, VectorDatabaseError
+from dataclasses import dataclass
+@dataclass
+class QueryContentRequest:
+    query_text: str
+    start_date: str = None
+    end_date: str = None
+    category: str = None
+    k: int = 5
 
-def query_content(query_text: str, start_date: str = None, end_date: str = None, category: str = None, k: int = 5) -> Dict[str, Any]:
+def query_content(request: QueryContentRequest) -> Dict[str, Any]:
     """ Query stored content using date ranges or categories.
     Args:
         query_text : The query parameters for content search.
-        start_date (str, optional): Start date for date range query in ISO format (YYYY-MM-DD).
-        end_date (str, optional): End date for date range query in ISO format (YYYY-MM-DD).
+        start_date (str, optional): Start date for date range query in ISO format (YYYY-MM-DDThh-mm-ss).
+        end_date (str, optional): End date for date range query in ISO format (YYYY-MM-DDThh-mm-ss).
         category (str, optional): Category for category-based query.
         k (int, optional): Number of top results to return. Defaults to 5.
     Returns:
@@ -18,23 +26,21 @@ def query_content(query_text: str, start_date: str = None, end_date: str = None,
         VectorDatabaseError: If the query operation fails.
     """
     try: 
-        # Validate input
-        if not isinstance(query_text, dict):
-            raise ValueError("Query text must be a dictionary.")
+        
         vd = VectorDatabase()
 
-        k = query_text.get("k", 5)
-        if start_date and end_date:
-            start_date = datetime.fromisoformat(start_date)
-            end_date = datetime.fromisoformat(end_date)
+        k = request.k
+        if request.start_date and request.end_date:
+            start_date = datetime.fromisoformat(request.start_date)
+            end_date = datetime.fromisoformat(request.end_date)
             results = vd.query_by_date_range(
                 start_date=start_date,
                 end_date=end_date,
                 k=k
             )
-        elif category:
+        elif request.category:
             results = vd.get_by_category(
-                category=category,
+                category=request.category,
                 limit=k
             )
         else:

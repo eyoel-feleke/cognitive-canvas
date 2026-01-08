@@ -1,4 +1,6 @@
 from src.tools import store_content, generate_quiz, query_content
+from src.tools.store_content import ContentData
+from src.tools.query_content import QueryContentRequest
 from mcp.server.fastmcp import FastMCP
 from typing import List, Literal
 import logging
@@ -16,7 +18,7 @@ class MCPServer:
         self.mcp.tool()(self.generate_quiz_tool)
         
     
-    def store_content_tool(self, content_data: str, content_type: Literal["url", "text"], custom_category: str = None, custom_tags: list = None):
+    def store_content_tool(self, content_data: ContentData):
         """Stores and categorizes content data.
         Args:
             content_data (Dict): The content data to be stored.
@@ -37,16 +39,16 @@ class MCPServer:
             ContentStorageException: If content storage fails.
         """
         try:
-            return store_content(content_data, content_type, custom_category, custom_tags)
+            return store_content(content_data)
         except Exception as e:
             return f"Error storing content: {(e)}"
 
-    def query_content_tool(self, query_text: str, start_date: str = None, end_date: str = None, category: str = None, k: int = 5):
+    def query_content_tool(self, query_request: QueryContentRequest):
         """ Query stored content using date ranges or categories.
         Args:
             query_text : The query parameters for content search.
-            start_date (str, optional): Start date for date range query in ISO format (YYYY-MM-DD).
-            end_date (str, optional): End date for date range query in ISO format (YYYY-MM-DD).
+            start_date (str, optional): Start date for date range query in ISO format (YYYY-MM-DDTHH:MM:SS).
+            end_date (str, optional): End date for date range query in ISO format (YYYY-MM-DDTHH:MM:SS).
             category (str, optional): Category for category-based query.
             k (int, optional): Number of top results to return. Defaults to 5.
         Returns:
@@ -57,7 +59,7 @@ class MCPServer:
             VectorDatabaseError: If the query operation fails.
         """
         try:
-            return query_content(query_text, start_date, end_date, category, k)
+            return query_content(query_request)
         except Exception as e:
             return f"Error querying content: {(e)}"
 

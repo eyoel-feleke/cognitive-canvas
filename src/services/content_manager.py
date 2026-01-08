@@ -135,7 +135,7 @@ class ContentManager:
             # Step 2: Generate embedding
             logger.debug("Generating embedding for content")
             # Implement embedding generation logic
-            embedding = self.embedding_service.generate_embedding(extracted_content)
+            # embedding = self.embedding_service.generate_embedding(extracted_content)
 
             # Step 3: Categorize content
             logger.debug("Categorizing content with AI")
@@ -171,7 +171,7 @@ class ContentManager:
                 category=category,
                 summary=summary,
                 tags=tags,
-                embedding=embedding,
+                # embedding=embedding,
                 timestamp=datetime.now(),
                 source_url=url,
                 metadata=metadata
@@ -233,18 +233,18 @@ class ContentManager:
             # Step 2: Generate embedding
             logger.debug("Generating embedding for text")
             # Implement embedding generation logic
-            embedding = self.embedding_service.generate_embedding(text)
+            # embedding = self.embedding_service.generate_embedding(text)
             # Step 3: Categorize
             logger.debug("Categorizing text with AI")
             # Implement categorization logic with AI and handle custom_category
-            cat_result = self.categorization_service.categorize_content(extracted_text)
+            cat_result = self.categorization_service.categorize_content(title=title, content=text)
             if custom_category is not None:
                 category = custom_category
                 tags = custom_tags if custom_tags is not None else []
             else:
                 category = cat_result.category
                 tags = custom_tags if custom_tags is not None else cat_result.tags
-            summary = extracted_text.get("summary", "")
+            summary = cat_result.summary
             # Step 4: Create metadata
             logger.debug("Creating content metadata")
             # Implement metadata creation logic
@@ -268,7 +268,7 @@ class ContentManager:
                 category=category,
                 summary=summary,
                 tags=tags,
-                embedding=embedding,
+                # embedding=embedding,
                 timestamp=datetime.now(),
                 source_url=None,
                 metadata=metadata
@@ -376,7 +376,7 @@ class ContentManager:
                     summary=result['metadatas'][i].get('summary', ''),
                     category=category,
                     tags=result['metadatas'][i].get('tags', []),
-                    embedding=result['embeddings'][i],
+                    # embedding=result['embeddings'][i],
                     timestamp=datetime.fromtimestamp(result['metadatas'][i].get('timestamp', datetime.now().timestamp())),
                     source_url=result['metadatas'][i].get('url', None),
                     metadata=content_metadata

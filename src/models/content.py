@@ -23,7 +23,7 @@ class ContentRecord(BaseModel):
     summary: str
     category: str
     tags: List[str]
-    embedding: List[float]
+    # embedding: List[float]
     timestamp: datetime
     source_url: Optional[str] = None
     metadata: ContentMetadata
