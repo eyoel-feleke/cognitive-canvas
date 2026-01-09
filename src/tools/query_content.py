@@ -45,7 +45,6 @@ def query_content(request: QueryContentRequest) -> Dict[str, Any]:
             )
         else:
             raise ValueError("Either date_range or category must be provided for querying content.")
-        # fromat mcp results for 
         return {"results": results}
     except Exception as e:
         raise VectorDatabaseError(f"Failed to query content: {str(e)}")

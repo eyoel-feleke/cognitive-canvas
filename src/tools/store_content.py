@@ -43,7 +43,6 @@ def store_content(content_data: ContentData) ->Dict[str, Any]:
     """
     # MCP tool: store content
     try:
-        # validate_with_schema(content_data, store_content_schema)
 
 
         api_key = os.getenv("OPENAI_API_KEY")
