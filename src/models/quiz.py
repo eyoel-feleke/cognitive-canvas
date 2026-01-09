@@ -27,7 +27,6 @@ class QuizResult(BaseModel):
 
 # Example of proper model usage and serialization
 if __name__ == "__main__":
-    # Create a quiz question
     question = QuizQuestion(
         number=1,
         tag="Python",
@@ -36,25 +35,24 @@ if __name__ == "__main__":
         choice=["6", "7", "8", "9"]
     )
     
-    # Create a quiz with the question
     quiz = Quiz(
         title="Python Basics Quiz",
         questions=[question]
     )
     
-    # Create a quiz result
+    
     result = QuizResult(
         user_name="John Doe",
         score=85.0,
         total=100
     )
     
-    # Test serialization
+    
     question_json = question.model_dump_json()
     quiz_json = quiz.model_dump_json()
     result_json = result.model_dump_json()
     
-    # Test deserialization
+    
     QuizQuestion.model_validate_json(question_json)
     Quiz.model_validate_json(quiz_json)
     QuizResult.model_validate_json(result_json)

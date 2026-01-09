@@ -3,6 +3,7 @@ from chromadb.api.types import GetResult, QueryResult
 from uuid import uuid4
 from datetime import datetime
 from typing import List, Dict, Optional, Any
+from src.models.content import ContentRecord, ContentMetadata
 
 class VectorDatabaseError(Exception):
     """Base exception for vector database operations."""
@@ -19,13 +20,12 @@ class VectorDatabase:
         except Exception as e:
             raise VectorDatabaseError(f"Failed to initialize database: {str(e)}")
     
-    def store(self, content_dict: Dict[str, Any], category: str) -> str:
+    def store(self, content_record: ContentRecord) -> str:
         """  
         Store a content item in the vector database with associated metadata.  
 
         Args:  
-            content_dict (Dict[str, Any]): A dictionary containing content details. Expected keys include  
-                ``'content'``, ``'title'``, ``'tags'``, ``'summary'``, and optionally ``'source_url'``.  
+            content_record (ContentRecord): A ContentRecord model instance containing all content details.
             category (str): The category to associate with the content item. 
         Returns:  
             str: The unique identifier assigned to the stored content item.
@@ -34,17 +34,17 @@ class VectorDatabase:
             underlying collection add method raises an exception).
         """  
         try:
-            doc_id = str(uuid4())
+            doc_id = str(content_record.content_id)
             self.collection.add(
                 # embeddings=[embedding],
-                documents=[content_dict.get('content', content_dict.get('original_content', ''))],
+                documents=[content_record.original_content],
                 metadatas=[{
-                    "title": content_dict.get('title', ''),
-                    "category": category,
-                    "timestamp": datetime.now().timestamp(),
-                    "url": content_dict.get('source_url', ''),
-                    "tags": ','.join(content_dict.get('tags', [])),
-                    "summary": content_dict.get('summary', '')
+                    "title": content_record.title,
+                    "category": content_record.category,
+                    "timestamp": content_record.timestamp.timestamp(),
+                    "url": content_record.source_url or '',
+                    "tags": ','.join(content_record.tags),
+                    "summary": content_record.summary
                 }],
                 ids=[doc_id]
             )
@@ -230,20 +230,7 @@ if __name__ == "__main__":
 
     # Example usage
     db = VectorDatabase()
-    
-    # for _ in range(5):
-    #     content = {
-    #         "content": f"This is a sample content {_} for testing.",
-    #         "title": f"Sample Content {_}",
-    #         "tags": ["test", "sample"],
-    #         "summary": "A brief summary of the sample content.",
-    #         "source_url": "http://example.com/sample"
-    #     }
-    #     category = f"TestCategory {_}"
-    #     content_id = db.store(content, category)
-    #     print(f"Stored content with ID: {content_id}")
 
-    
     category_results = db.get_by_category("TestCategory 1", limit=2)
     print("Category Results:", category_results)
 

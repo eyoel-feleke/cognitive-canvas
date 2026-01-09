@@ -23,39 +23,6 @@ class ContentRecord(BaseModel):
     summary: str
     category: str
     tags: List[str]
-    embedding: List[float]
     timestamp: datetime
     source_url: Optional[str] = None
     metadata: ContentMetadata
-
-# Example of proper model usage and serialization
-if __name__ == "__main__":
-    # Create metadata instance
-    metadata = ContentMetadata(
-        title="Sample Metadata",
-        author="Author Name",
-        abstract="This is a synopsis of the sample metadata.",
-        keywords=["keyword1", "keyword2"],
-        published_date=datetime.now()
-    )
-    
-    # Create content record instance
-    content_record = ContentRecord(
-        original_content="This is a sample content.",
-        content_type="text",
-        title="Sample Content",
-        summary="This is a summary of the sample content.",
-        category="General",
-        tags=["sample", "content"],
-        embedding=[0.1, 0.2, 0.3],
-        timestamp=datetime.now(),
-        metadata=metadata
-    )
-    
-    # Test serialization
-    metadata_json = metadata.model_dump_json()
-    content_json = content_record.model_dump_json()
-    
-    # Test deserialization
-    ContentMetadata.model_validate_json(metadata_json)
-    ContentRecord.model_validate_json(content_json)

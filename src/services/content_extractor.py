@@ -85,23 +85,28 @@ class ContentExtractor:
             raise MetadataExtractionException(message="Error extracting metadata. No metadata found in the content.")
 
         return metadata
-    def extract_from_text(self, text: str) -> dict:
+    def extract_from_text(self, text: str, title: str = "") -> dict:
         """Extract Content from a given text."""
         cleaned_text = self.clean_text(text)
         return {
-            'title': 'Extracted text',
+            'title': title,
             'content': cleaned_text,
             'metadata': {"type": "text"}
         }
-    def extract_from_code(self, code: str) -> dict:
+    def extract_from_code(self, code: str, title: str = "") -> dict:
         """Extract code content."""
         cleaned_code = self.clean_code(code)
+        title = self.get_title(title) if title else "Code Snippet"
         return {
-            'title': "Code snippet",
+            'title': title,
             'content': cleaned_code,
             'metadata': {"type": "code"}
         }
-    
+    def get_title(self, html: str) -> str:
+        """Extract title from HTML content."""
+        soup = BeautifulSoup(html, 'html.parser')
+        title = soup.find('title')
+        return title.text.strip() if title else "No title Found"
     def clean_text(self, text: str) -> str:
         """Clean and normalize text."""
         text = re.sub(r'\s+', ' ', text)  
