@@ -131,13 +131,7 @@ class ContentManager:
             content_text = (extracted_content.get("content") or "").strip()
             if not content_text:
                 raise ContentStorageException("No content extracted")
-
-            # Step 2: Generate embedding
-            logger.debug("Generating embedding for content")
-            # Implement embedding generation logic
-            embedding = self.embedding_service.generate_embedding(extracted_content)
-
-            # Step 3: Categorize content
+            # Step 2: Categorize content
             logger.debug("Categorizing content with AI")
             # Implement categorization logic with AI and handle custom_category
             cat_result = self.categorization_service.categorize_content(extracted_content)
@@ -145,11 +139,11 @@ class ContentManager:
                 category = custom_category
                 tags = custom_tags if custom_tags is not None else []
             else:
-                category = cat_result.get('category')
-                tags = custom_tags if custom_tags is not None else cat_result.get('tags', [])
-            summary = cat_result.get("summary", "")
+                category = cat_result.category
+                tags = custom_tags if custom_tags is not None else cat_result.tags
+            summary = extracted_content.get("summary", "")
             
-            # Step 4: Create metadata
+            # Step 3: Create metadata
             logger.debug("Creating content metadata")
             # Implement metadata extraction logic
             raw_metadata = extracted_content.get("metadata", {})
@@ -160,7 +154,7 @@ class ContentManager:
                 keywords=raw_metadata.get("keywords", []),
                 date_published=raw_metadata.get("date_published", datetime.now())
             )
-            # Step 5: Create content record
+            # Step 4: Create content record
             # Implement ContentRecord creation logic
             logger.debug("Creating content record")
             record = extracted_content.get("content", "")
@@ -171,12 +165,11 @@ class ContentManager:
                 category=category,
                 summary=summary,
                 tags=tags,
-                embedding=embedding,
                 timestamp=datetime.now(),
                 source_url=url,
                 metadata=metadata
             )
-            # Step 6: Store in vector database
+            # Step 5: Store in vector database
             logger.debug("Storing content in vector database")
             # Implement vector_database.store() method
             self.vector_database.store(content_record)
@@ -230,22 +223,18 @@ class ContentManager:
             if not text:
                 raise ContentStorageException("No valid text content provided")
             title = extracted_text.get("title", "No Title")
-            # Step 2: Generate embedding
-            logger.debug("Generating embedding for text")
-            # Implement embedding generation logic
-            embedding = self.embedding_service.generate_embedding(text)
-            # Step 3: Categorize
+            # Step 2: Categorize
             logger.debug("Categorizing text with AI")
             # Implement categorization logic with AI and handle custom_category
-            cat_result = self.categorization_service.categorize_content(extracted_text)
+            cat_result = self.categorization_service.categorize_content(title=title, content=text)
             if custom_category is not None:
                 category = custom_category
                 tags = custom_tags if custom_tags is not None else []
             else:
-                category = cat_result.get('category')
-                tags = custom_tags if custom_tags is not None else cat_result.get('tags', [])
-            summary = extracted_text.get("summary", "")
-            # Step 4: Create metadata
+                category = cat_result.category
+                tags = custom_tags if custom_tags is not None else cat_result.tags
+            summary = cat_result.summary
+            # Step 3: Create metadata
             logger.debug("Creating content metadata")
             # Implement metadata creation logic
             raw_metadata = extracted_text.get("metadata", {})
@@ -256,7 +245,7 @@ class ContentManager:
                 keywords=raw_metadata.get("keywords", []),
                 date_published=raw_metadata.get("date_published", datetime.now())
             )
-            # Step 5: Create content record
+            # Step 4: Create content record
             logger.debug("Creating content record")
             # Implement ContentRecord creation logic
             record = extracted_text.get("content", "")
@@ -268,12 +257,11 @@ class ContentManager:
                 category=category,
                 summary=summary,
                 tags=tags,
-                embedding=embedding,
                 timestamp=datetime.now(),
                 source_url=None,
                 metadata=metadata
             )
-            # Step 6: Store in vector database
+            # Step 5: Store in vector database
             logger.debug("Storing text content in vector database")
             # Implement vector_database.store() method
             self.vector_database.store(content_record)
@@ -376,14 +364,11 @@ class ContentManager:
                     summary=result['metadatas'][i].get('summary', ''),
                     category=category,
                     tags=result['metadatas'][i].get('tags', []),
-                    embedding=result['embeddings'][i],
                     timestamp=datetime.fromtimestamp(result['metadatas'][i].get('timestamp', datetime.now().timestamp())),
                     source_url=result['metadatas'][i].get('url', None),
                     metadata=content_metadata
                 )
                 content_records.append(content_record)
-            return content_records
-            # raise NotImplementedError("Vector database get_by_category not yet implemented")
         except Exception as e:
             logger.error(f"Failed to retrieve content by category: {str(e)}")
             raise ContentRetrievalException(f"Content retrieval failed: {str(e)}")
@@ -413,7 +398,6 @@ class ContentManager:
         try:
             # Implement vector_database.query_by_date_range() method
           return self.vector_database.query_by_date_range(start_date, end_date, category)
-           # raise NotImplementedError("Vector database query_by_date_range not yet implemented")
         except Exception as e:
             logger.error(f"Failed to retrieve content by date range: {str(e)}")
             raise ContentRetrievalException(f"Content retrieval failed: {str(e)}")
@@ -443,17 +427,15 @@ class ContentManager:
         try:
             # Step 1: Generate embedding for query
             logger.debug("Generating embedding for query text")
-            #: Implement query embedding generation
-            # query_embedding = self.embedding_service.generate_embedding(query_text)
+            # Implement query embedding generation
             # Step 2: Perform similarity search in vector database
             logger.debug("Searching vector database")
-            #: Implement vector_database.similarity_search() method
+            # Implement vector_database.similarity_search() method
             
             results = self.vector_database.similarity_search(
                 query_texts=query_text, k=top_k, category=category_filter
             )
             return results
-            # raise NotImplementedError("Vector database similarity_search not yet implemented")
         except Exception as e:
             logger.error(f"Failed to perform similarity search: {str(e)}")
             raise ContentRetrievalException(f"Similarity search failed: {str(e)}")
@@ -562,8 +544,6 @@ class ContentManager:
         logger.info(f"Generating quiz from {len(content_ids)} content items")
         
         try:
-            #content_ids = self.vector_database.get_by_ids(content_ids)
-            #if not content_ids:
             raise QuizGenerationException("No content IDs provided")
             # Implement vector_database.get_by_ids() method
             

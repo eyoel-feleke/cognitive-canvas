@@ -71,12 +71,14 @@ class TestStoreContentFromURL:
             }
             
             manager.embedding_service.generate_embedding.return_value = [0.1, 0.2, 0.3]
-            
-            manager.categorization_service.categorize_content.return_value = {
-                'category': 'Technology',
-                'summary': 'This is a technology article'
-            }
-            
+            mock_category_results = Mock(spec=CategoryResults, 
+                category='Technology',
+                summary='Summary',
+                tags=["tag1", "tag2"],
+                confidence=0.95
+            )
+            manager.categorization_service.categorize_content.return_value = mock_category_results
+
             yield manager
     
     def test_store_content_from_url_success(self, manager):
@@ -173,10 +175,13 @@ class TestStoreContentFromText:
             
             manager.embedding_service.generate_embedding.return_value = [0.1, 0.2, 0.3]
             
-            manager.categorization_service.categorize_content.return_value = {
-                'category': 'Notes',
-                'summary': 'User notes'
-            }
+            mock_category_results = Mock(spec=CategoryResults, 
+                category='Technology',
+                summary='Summary',
+                tags=["tag1", "tag2"],
+                confidence=0.95
+            )
+            manager.categorization_service.categorize_content.return_value = mock_category_results
             
             yield manager
     
